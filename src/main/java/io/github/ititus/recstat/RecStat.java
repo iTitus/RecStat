@@ -5,11 +5,11 @@ import io.github.ititus.recstat.command.CommandRecStat;
 import io.github.ititus.recstat.handler.ConfigHandler;
 import io.github.ititus.recstat.proxy.CommonProxy;
 
-import net.minecraft.event.HoverEvent;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.HoverEvent;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -36,20 +36,20 @@ public class RecStat {
 	@SidedProxy(clientSide = RecStat.CLIENT_PROXY, serverSide = RecStat.SERVER_PROXY)
 	public static CommonProxy proxy;
 
-	public static IChatComponent getWithPrefix(IChatComponent msg) {
-		IChatComponent prefix = new ChatComponentText(EnumChatFormatting.GRAY + "[" + EnumChatFormatting.DARK_RED + MOD_NAME + EnumChatFormatting.GRAY + "]");
-		prefix.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentTranslation("text.recstat:info", MOD_NAME, MOD_AUTHOR)));
+	public static ITextComponent getWithPrefix(ITextComponent msg) {
+		ITextComponent prefix = new TextComponentString(TextFormatting.GRAY + "[" + TextFormatting.DARK_RED + MOD_NAME + TextFormatting.GRAY + "]");
+		prefix.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentTranslation("text.recstat:info", MOD_NAME, MOD_AUTHOR)));
 
-		IChatComponent text = new ChatComponentTranslation("text.recstat:prefix", prefix, msg);
+		ITextComponent text = new TextComponentTranslation("text.recstat:prefix", prefix, msg);
 
 		return text;
 
 	}
 
-	public static IChatComponent getPlayerNamePrefix() {
-		IChatComponent prefix = new ChatComponentTranslation("text.recstat:playerPrefixText." + ConfigHandler.playerPrefixText);
+	public static ITextComponent getPlayerNamePrefix() {
+		ITextComponent prefix = new TextComponentTranslation("text.recstat:playerPrefixText." + ConfigHandler.playerPrefixText);
 
-		prefix.appendSibling(new ChatComponentText(" "));
+		prefix.appendSibling(new TextComponentString(" "));
 		return prefix;
 	}
 

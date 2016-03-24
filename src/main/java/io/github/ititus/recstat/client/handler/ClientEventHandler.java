@@ -17,7 +17,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.profiler.Profiler;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -81,7 +81,7 @@ public class ClientEventHandler {
 							if (uuid != null) {
 								IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
 								if (playerStatus.isRecording()) {
-									String text = StatCollector.translateToLocal("text.recstat:recordingHudText." + ConfigHandler.recordingHudText);
+									String text = I18n.translateToLocal("text.recstat:recordingHudText." + ConfigHandler.recordingHudText);
 									int color = 0xFFFFFF;
 									int textWidth = fr.getStringWidth(text);
 									int textHeight = fr.FONT_HEIGHT;

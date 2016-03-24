@@ -15,9 +15,10 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 
 public class CommandRecStat extends CommandBase {
 
@@ -32,7 +33,7 @@ public class CommandRecStat extends CommandBase {
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length < 1 || args.length > 3) {
 			throw new WrongUsageException(getCommandUsage(sender));
 		}
@@ -43,7 +44,7 @@ public class CommandRecStat extends CommandBase {
 				if (args.length == 1) {
 					player = getCommandSenderAsPlayer(sender);
 				} else if (args.length == 2) {
-					player = getPlayer(sender, args[1]);
+					player = getPlayer(server, sender, args[1]);
 				} else {
 					throw new WrongUsageException(getCommandUsage(sender));
 				}
@@ -54,7 +55,7 @@ public class CommandRecStat extends CommandBase {
 						if (uuid != null) {
 							IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
 
-							ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:status." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
+							ITextComponent msg = new TextComponentTranslation("text.recstat:status." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
 							sender.addChatMessage(RecStat.getWithPrefix(msg));
 						}
 					}
@@ -66,11 +67,11 @@ public class CommandRecStat extends CommandBase {
 				if (args.length == 1) {
 					player = getCommandSenderAsPlayer(sender);
 				} else if (args.length == 2) {
-					player = getPlayer(sender, args[1]);
+					player = getPlayer(server, sender, args[1]);
 					if (player != sender && !sender.canCommandSenderUseCommand(2, getCommandName())) {
-						ChatComponentTranslation message = new ChatComponentTranslation("commands.generic.permission");
-						message.getChatStyle().setColor(EnumChatFormatting.RED);
-						sender.addChatMessage(message);
+						ITextComponent msg = new TextComponentTranslation("commands.generic.permission");
+						msg.getChatStyle().setColor(TextFormatting.RED);
+						sender.addChatMessage(msg);
 						break;
 					}
 				} else {
@@ -85,8 +86,8 @@ public class CommandRecStat extends CommandBase {
 							IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
 							RecStat.getPlayerTracker().sync();
 
-							ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:record." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
-							MinecraftServer.getServer().getConfigurationManager().sendChatMsg(RecStat.getWithPrefix(msg));
+							ITextComponent msg = new TextComponentTranslation("text.recstat:record." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
+							server.getPlayerList().sendChatMsg(RecStat.getWithPrefix(msg));
 						}
 					}
 				}
@@ -97,11 +98,11 @@ public class CommandRecStat extends CommandBase {
 				if (args.length == 2) {
 					player = getCommandSenderAsPlayer(sender);
 				} else if (args.length == 3) {
-					player = getPlayer(sender, args[2]);
+					player = getPlayer(server, sender, args[2]);
 					if (player != sender && !sender.canCommandSenderUseCommand(2, getCommandName())) {
-						ChatComponentTranslation message = new ChatComponentTranslation("commands.generic.permission");
-						message.getChatStyle().setColor(EnumChatFormatting.RED);
-						sender.addChatMessage(message);
+						ITextComponent msg = new TextComponentTranslation("commands.generic.permission");
+						msg.getChatStyle().setColor(TextFormatting.RED);
+						sender.addChatMessage(msg);
 						break;
 					}
 				} else {
@@ -125,15 +126,15 @@ public class CommandRecStat extends CommandBase {
 
 							IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
 							if (playerStatus.isRecording() == isRecording) {
-								ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:alreadyRecording." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
-								msg.getChatStyle().setColor(EnumChatFormatting.RED);
+								ITextComponent msg = new TextComponentTranslation("text.recstat:alreadyRecording." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
+								msg.getChatStyle().setColor(TextFormatting.RED);
 								sender.addChatMessage(RecStat.getWithPrefix(msg));
 							} else {
 								playerStatus.setRecording(isRecording);
 								RecStat.getPlayerTracker().sync();
 
-								ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:record." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
-								MinecraftServer.getServer().getConfigurationManager().sendChatMsg(RecStat.getWithPrefix(msg));
+								ITextComponent msg = new TextComponentTranslation("text.recstat:record." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
+								server.getPlayerList().sendChatMsg(RecStat.getWithPrefix(msg));
 							}
 						}
 					}
@@ -152,7 +153,7 @@ public class CommandRecStat extends CommandBase {
 	}
 
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender sender) {
+	public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
 		return true;
 	}
 
@@ -174,12 +175,12 @@ public class CommandRecStat extends CommandBase {
 	}
 
 	@Override
-	public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
 		if (args.length == 1) {
 			return getListOfStringsMatchingLastWord(args, new String[]{"get", "set", "toggle"});
 		}
 		if (isUsernameIndex(args, args.length - 1)) {
-			return getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
+			return getListOfStringsMatchingLastWord(args, server.getAllUsernames());
 		}
 		if (args.length == 2) {
 			return getListOfStringsMatchingLastWord(args, new String[]{"true", "false"});

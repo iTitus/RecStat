@@ -8,7 +8,8 @@ import io.netty.buffer.ByteBuf;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -38,16 +39,20 @@ public class MessageTogglePlayerStatus implements IMessage, IMessageHandler<Mess
 
 	@Override
 	public IMessage onMessage(MessageTogglePlayerStatus message, MessageContext ctx) {
-		UUID uuid = message.uuid;
-		EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUUID(uuid);
+		MinecraftServer server = ctx.getServerHandler().playerEntity.mcServer;
 
-		if (player != null) {
-			RecStat.getPlayerTracker().togglePlayerStatus(uuid);
-			RecStat.getPlayerTracker().sync();
+		if (server != null) {
+			UUID uuid = message.uuid;
+			EntityPlayerMP player = server.getPlayerList().getPlayerByUUID(uuid);
 
-			IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
-			ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:record." + (playerStatus.isRecording() ? "true" : "false"), player.getDisplayName());
-			MinecraftServer.getServer().getConfigurationManager().sendChatMsg(RecStat.getWithPrefix(msg));
+			if (player != null) {
+				RecStat.getPlayerTracker().togglePlayerStatus(uuid);
+				RecStat.getPlayerTracker().sync();
+
+				IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
+				ITextComponent msg = new TextComponentTranslation("text.recstat:record." + (playerStatus.isRecording() ? "true" : "false"), player.getDisplayName());
+				server.getPlayerList().sendChatMsg(RecStat.getWithPrefix(msg));
+			}
 		}
 		return null;
 	}
