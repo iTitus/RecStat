@@ -1,0 +1,16 @@
+[
+{
+  "modid": "recstat",
+  "name": "RecStat",
+  "description": "Recording status tracker.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["iTitus"],
+  "credits": "The Forge and FML guys",
+  "logoFile": "assets/recstat/textures/logo_small.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]

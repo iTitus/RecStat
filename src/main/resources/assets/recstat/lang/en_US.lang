@@ -1,0 +1,33 @@
+text.recstat:config.title=RecStat Configuration
+
+text.recstat:prefix=%s %s
+text.recstat:info=%s by %s
+
+text.recstat:playerPrefixText.0=§7[§4§l°§7]
+text.recstat:playerPrefixText.1=§7[§4Recording§r§7]
+text.recstat:playerPrefixText.2=§7[§4R§7]
+text.recstat:playerPrefixText.3=§7[§4r§7]
+
+text.recstat:recordingHudText.0=§4§l°
+text.recstat:recordingHudText.1=§4Recording§r
+text.recstat:recordingHudText.2=§4R
+text.recstat:recordingHudText.3=§4r
+
+key.recstat:changeRecordStatus=Toggle recording state
+key.categories.recstat:recstat=RecStat
+
+# server-wide broadcast messages #
+text.recstat:record.true=%s has started recording
+text.recstat:record.false=%s has stopped recording
+
+# /recstat command #
+commands.recstat:recstat.usage=/recstat <get|toggle|set <true|false>> [player]
+
+# 'get' sub-comand feedback #
+text.recstat:status.true=%s is recording
+text.recstat:status.false=%s is not recording
+
+# 'set' sub-comand error #
+text.recstat:alreadyRecording.true=%s is already recording
+text.recstat:alreadyRecording.false=%s is already not recording
+
