@@ -14,6 +14,7 @@ import io.github.ititus.recstat.network.message.MessageTogglePlayerStatus;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.profiler.Profiler;
@@ -64,7 +65,7 @@ public class ClientEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onRenderGameOverPost(RenderGameOverlayEvent.Post event) {
-		if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
+		if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
 
 			Minecraft mc = Minecraft.getMinecraft();
 			FontRenderer fr = mc.fontRendererObj;
@@ -72,7 +73,8 @@ public class ClientEventHandler {
 
 			p.startSection("recstat-hud");
 			{
-				if (fr != null && event.resolution != null) {
+				ScaledResolution resolution = event.getResolution();
+				if (fr != null && resolution != null) {
 					EntityPlayer player = mc.thePlayer;
 					if (player != null) {
 						GameProfile gameProfile = player.getGameProfile();
@@ -85,8 +87,8 @@ public class ClientEventHandler {
 									int color = 0xFFFFFF;
 									int textWidth = fr.getStringWidth(text);
 									int textHeight = fr.FONT_HEIGHT;
-									int width = event.resolution.getScaledWidth();
-									int height = event.resolution.getScaledHeight();
+									int width = resolution.getScaledWidth();
+									int height = resolution.getScaledHeight();
 
 									int x, y;
 

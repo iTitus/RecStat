@@ -7,6 +7,7 @@ import com.mojang.authlib.GameProfile;
 import io.github.ititus.recstat.RecStat;
 import io.github.ititus.recstat.api.IPlayerStatus;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -48,14 +49,15 @@ public class EventHandler {
 
 	@SubscribeEvent
 	public void onPlayerGetDisplayName(net.minecraftforge.event.entity.player.PlayerEvent.NameFormat event) {
-		if (event.entityPlayer != null) {
-			GameProfile gameProfile = event.entityPlayer.getGameProfile();
+		EntityPlayer player = event.getEntityPlayer();
+		if (player != null) {
+			GameProfile gameProfile = player.getGameProfile();
 			if (gameProfile != null) {
 				UUID uuid = gameProfile.getId();
 				if (uuid != null) {
 					IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
 					if (playerStatus.isRecording()) {
-						event.displayname = RecStat.getPlayerNamePrefix().getFormattedText() + event.displayname;
+						event.setDisplayname(RecStat.getPlayerNamePrefix().getFormattedText() + event.getDisplayname());
 					}
 				}
 			}
@@ -64,8 +66,9 @@ public class EventHandler {
 
 	@SubscribeEvent
 	public void onPlayerUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (event.entityLiving instanceof EntityPlayer) {
-			EntityPlayer player = (EntityPlayer) event.entityLiving;
+		EntityLivingBase entityLiving = event.getEntityLiving();
+		if (entityLiving instanceof EntityPlayer) {
+			EntityPlayer player = (EntityPlayer) entityLiving;
 			GameProfile gameProfile = player.getGameProfile();
 			if (gameProfile != null) {
 				UUID uuid = gameProfile.getId();
@@ -78,7 +81,7 @@ public class EventHandler {
 
 	@SubscribeEvent
 	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-		if (event.modID.equalsIgnoreCase(RecStat.MOD_ID)) {
+		if (RecStat.MOD_ID.equalsIgnoreCase(event.getModID())) {
 			ConfigHandler.loadConfig();
 		}
 	}
