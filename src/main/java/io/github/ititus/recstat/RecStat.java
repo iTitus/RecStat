@@ -1,10 +1,17 @@
 package io.github.ititus.recstat;
 
+import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
+
+import io.github.ititus.recstat.api.IPlayerStatus;
 import io.github.ititus.recstat.api.IPlayerTracker;
 import io.github.ititus.recstat.command.CommandRecStat;
 import io.github.ititus.recstat.handler.ConfigHandler;
 import io.github.ititus.recstat.proxy.CommonProxy;
+import io.github.ititus.recstat.tracker.PlayerStatus;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
@@ -39,18 +46,30 @@ public class RecStat {
 	public static IChatComponent getWithPrefix(IChatComponent msg) {
 		IChatComponent prefix = new ChatComponentText(EnumChatFormatting.GRAY + "[" + EnumChatFormatting.DARK_RED + MOD_NAME + EnumChatFormatting.GRAY + "]");
 		prefix.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentTranslation("text.recstat:info", MOD_NAME, MOD_AUTHOR)));
-
 		IChatComponent text = new ChatComponentTranslation("text.recstat:prefix", prefix, msg);
-
 		return text;
-
 	}
 
 	public static IChatComponent getPlayerNamePrefix() {
 		IChatComponent prefix = new ChatComponentTranslation("text.recstat:playerPrefixText." + ConfigHandler.playerPrefixText);
-
 		prefix.appendSibling(new ChatComponentText(" "));
 		return prefix;
+	}
+
+	public static IPlayerStatus getToggledPlayerStatus(UUID uuid) {
+		IPlayerTracker playerTracker = getPlayerTracker();
+		IPlayerStatus playerStatus = playerTracker.getPlayerStatus(uuid);
+		return new PlayerStatus(!playerStatus.isRecording());
+	}
+
+	public static UUID getUUID(EntityPlayer player) {
+		if (player != null) {
+			GameProfile gameProfile = player.getGameProfile();
+			if (gameProfile != null) {
+				return gameProfile.getId();
+			}
+		}
+		return null;
 	}
 
 	public static IPlayerTracker getPlayerTracker() {

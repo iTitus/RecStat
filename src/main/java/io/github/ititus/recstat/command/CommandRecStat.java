@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-import com.mojang.authlib.GameProfile;
-
 import io.github.ititus.recstat.RecStat;
 import io.github.ititus.recstat.api.IPlayerStatus;
 
@@ -47,17 +45,12 @@ public class CommandRecStat extends CommandBase {
 				} else {
 					throw new WrongUsageException(getCommandUsage(sender));
 				}
-				if (player != null) {
-					GameProfile gameProfile = player.getGameProfile();
-					if (gameProfile != null) {
-						UUID uuid = gameProfile.getId();
-						if (uuid != null) {
-							IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
+				UUID uuid = RecStat.getUUID(player);
+				if (uuid != null) {
+					IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
 
-							ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:status." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
-							sender.addChatMessage(RecStat.getWithPrefix(msg));
-						}
-					}
+					ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:status." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
+					sender.addChatMessage(RecStat.getWithPrefix(msg));
 				}
 				break;
 			}
@@ -76,19 +69,14 @@ public class CommandRecStat extends CommandBase {
 				} else {
 					throw new WrongUsageException(getCommandUsage(sender));
 				}
-				if (player != null) {
-					GameProfile gameProfile = player.getGameProfile();
-					if (gameProfile != null) {
-						UUID uuid = gameProfile.getId();
-						if (uuid != null) {
-							RecStat.getPlayerTracker().togglePlayerStatus(uuid);
-							IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
-							RecStat.getPlayerTracker().sync();
+				UUID uuid = RecStat.getUUID(player);
+				if (uuid != null) {
+					RecStat.getPlayerTracker().setPlayerStatus(uuid, RecStat.getToggledPlayerStatus(uuid));
+					IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
+					RecStat.getPlayerTracker().sync();
 
-							ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:record." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
-							MinecraftServer.getServer().getConfigurationManager().sendChatMsg(RecStat.getWithPrefix(msg));
-						}
-					}
+					ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:record." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
+					MinecraftServer.getServer().getConfigurationManager().sendChatMsg(RecStat.getWithPrefix(msg));
 				}
 				break;
 			}
@@ -107,35 +95,29 @@ public class CommandRecStat extends CommandBase {
 				} else {
 					throw new WrongUsageException(getCommandUsage(sender));
 				}
-				if (player != null) {
-					GameProfile gameProfile = player.getGameProfile();
-					if (gameProfile != null) {
-						UUID uuid = gameProfile.getId();
-						if (uuid != null) {
+				UUID uuid = RecStat.getUUID(player);
+				if (uuid != null) {
+					String set = args[1].trim();
+					boolean isRecording;
+					if (set.equalsIgnoreCase("true")) {
+						isRecording = true;
+					} else if (set.equalsIgnoreCase("false")) {
+						isRecording = false;
+					} else {
+						throw new CommandException("commands.generic.boolean.invalid", set);
+					}
 
-							String set = args[1].trim();
-							boolean isRecording;
-							if (set.equalsIgnoreCase("true")) {
-								isRecording = true;
-							} else if (set.equalsIgnoreCase("false")) {
-								isRecording = false;
-							} else {
-								throw new CommandException("commands.generic.boolean.invalid", set);
-							}
+					IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
+					if (playerStatus.isRecording() == isRecording) {
+						ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:alreadyRecording." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
+						msg.getChatStyle().setColor(EnumChatFormatting.RED);
+						sender.addChatMessage(RecStat.getWithPrefix(msg));
+					} else {
+						playerStatus.setRecording(isRecording);
+						RecStat.getPlayerTracker().sync();
 
-							IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
-							if (playerStatus.isRecording() == isRecording) {
-								ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:alreadyRecording." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
-								msg.getChatStyle().setColor(EnumChatFormatting.RED);
-								sender.addChatMessage(RecStat.getWithPrefix(msg));
-							} else {
-								playerStatus.setRecording(isRecording);
-								RecStat.getPlayerTracker().sync();
-
-								ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:record." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
-								MinecraftServer.getServer().getConfigurationManager().sendChatMsg(RecStat.getWithPrefix(msg));
-							}
-						}
+						ChatComponentTranslation msg = new ChatComponentTranslation("text.recstat:record." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
+						MinecraftServer.getServer().getConfigurationManager().sendChatMsg(RecStat.getWithPrefix(msg));
 					}
 				}
 				break;

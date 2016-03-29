@@ -2,20 +2,18 @@ package io.github.ititus.recstat.client.handler;
 
 import java.util.UUID;
 
-import com.mojang.authlib.GameProfile;
-
 import org.lwjgl.input.Keyboard;
 
 import io.github.ititus.recstat.RecStat;
 import io.github.ititus.recstat.api.IPlayerStatus;
 import io.github.ititus.recstat.handler.ConfigHandler;
 import io.github.ititus.recstat.network.NetworkHandler;
-import io.github.ititus.recstat.network.message.MessageTogglePlayerStatus;
+import io.github.ititus.recstat.network.message.MessageSetPlayerStatus;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.util.StatCollector;
 
@@ -38,15 +36,9 @@ public class ClientEventHandler {
 		Minecraft mc = Minecraft.getMinecraft();
 		if (mc.inGameHasFocus) {
 			if (changeRecordStatus.isPressed()) {
-				EntityPlayer player = mc.thePlayer;
-				if (player != null) {
-					GameProfile gameProfile = player.getGameProfile();
-					if (gameProfile != null) {
-						UUID uuid = gameProfile.getId();
-						if (uuid != null) {
-							NetworkHandler.instance.sendToServer(new MessageTogglePlayerStatus(uuid));
-						}
-					}
+				UUID uuid = RecStat.getUUID(mc.thePlayer);
+				if (uuid != null) {
+					NetworkHandler.instance.sendToServer(new MessageSetPlayerStatus(RecStat.getToggledPlayerStatus(uuid)));
 				}
 			}
 		}
@@ -72,51 +64,46 @@ public class ClientEventHandler {
 
 			p.startSection("recstat-hud");
 			{
-				if (fr != null && event.resolution != null) {
-					EntityPlayer player = mc.thePlayer;
-					if (player != null) {
-						GameProfile gameProfile = player.getGameProfile();
-						if (gameProfile != null) {
-							UUID uuid = gameProfile.getId();
-							if (uuid != null) {
-								IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
-								if (playerStatus.isRecording()) {
-									String text = StatCollector.translateToLocal("text.recstat:recordingHudText." + ConfigHandler.recordingHudText);
-									int color = 0xFFFFFF;
-									int textWidth = fr.getStringWidth(text);
-									int textHeight = fr.FONT_HEIGHT;
-									int width = event.resolution.getScaledWidth();
-									int height = event.resolution.getScaledHeight();
+				ScaledResolution resolution = event.resolution;
+				if (fr != null && resolution != null) {
+					UUID uuid = RecStat.getUUID(mc.thePlayer);
+					if (uuid != null) {
+						IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
+						if (playerStatus.isRecording()) {
+							String text = StatCollector.translateToLocal("text.recstat:recordingHudText." + ConfigHandler.recordingHudText);
+							int color = 0xFFFFFF;
+							int textWidth = fr.getStringWidth(text);
+							int textHeight = fr.FONT_HEIGHT;
+							int width = resolution.getScaledWidth();
+							int height = resolution.getScaledHeight();
 
-									int x, y;
+							int x, y;
 
-									switch (ConfigHandler.recordingHudPosition) {
-										case 0: {
-											x = 1;
-											y = 1;
-											break;
-										}
-										case 1: {
-											x = width - textWidth - 1;
-											y = 1;
-											break;
-										}
-										case 2: {
-											x = 1;
-											y = height - textHeight - 1;
-											break;
-										}
-										default:
-										case 3: {
-											x = width - textWidth - 1;
-											y = height - textHeight - 1;
-											break;
-										}
-									}
-
-									fr.drawString(text, x, y, color);
+							switch (ConfigHandler.recordingHudPosition) {
+								case 0: {
+									x = 1;
+									y = 1;
+									break;
+								}
+								case 1: {
+									x = width - textWidth - 1;
+									y = 1;
+									break;
+								}
+								case 2: {
+									x = 1;
+									y = height - textHeight - 1;
+									break;
+								}
+								default:
+								case 3: {
+									x = width - textWidth - 1;
+									y = height - textHeight - 1;
+									break;
 								}
 							}
+
+							fr.drawString(text, x, y, color);
 						}
 					}
 				}

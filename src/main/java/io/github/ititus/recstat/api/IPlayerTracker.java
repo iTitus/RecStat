@@ -12,8 +12,8 @@ public interface IPlayerTracker extends INBTSerializable<NBTTagCompound> {
 
 	void removePlayerStatus(UUID uuid);
 
-	void sync();
+	void setPlayerStatus(UUID uuid, IPlayerStatus playerStatus);
 
-	void togglePlayerStatus(UUID uuid);
+	void sync();
 
 }
