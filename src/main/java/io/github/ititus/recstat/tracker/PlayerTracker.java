@@ -49,17 +49,17 @@ public class PlayerTracker implements IPlayerTracker {
 	}
 
 	@Override
-	public void sync() {
-		NetworkHandler.instance.sendToAll(new MessageSyncAll(RecStat.getPlayerTracker().serializeNBT()));
+	public void setPlayerStatus(UUID uuid, IPlayerStatus playerStatus) {
+		if (uuid == null || playerStatus == null) {
+			throw new NullPointerException();
+		}
+		IPlayerStatus existingPlayerStatus = getPlayerStatus(uuid);
+		existingPlayerStatus.setRecording(playerStatus.isRecording());
 	}
 
 	@Override
-	public void togglePlayerStatus(UUID uuid) {
-		IPlayerStatus playerStatus = getPlayerStatusRaw(uuid);
-		if (playerStatus == null) {
-			throw new NullPointerException();
-		}
-		playerStatus.setRecording(!playerStatus.isRecording());
+	public void sync() {
+		NetworkHandler.instance.sendToAll(new MessageSyncAll(RecStat.getPlayerTracker().serializeNBT()));
 	}
 
 	private NBTTagCompound serializeNBT(UUID uuid) {

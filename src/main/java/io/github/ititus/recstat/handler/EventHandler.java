@@ -2,8 +2,6 @@ package io.github.ititus.recstat.handler;
 
 import java.util.UUID;
 
-import com.mojang.authlib.GameProfile;
-
 import io.github.ititus.recstat.RecStat;
 import io.github.ititus.recstat.api.IPlayerStatus;
 
@@ -19,62 +17,43 @@ public class EventHandler {
 
 	@SubscribeEvent
 	public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-		if (event.player != null) {
-			GameProfile gameProfile = event.player.getGameProfile();
-			if (gameProfile != null) {
-				UUID uuid = gameProfile.getId();
-				if (uuid != null) {
-					RecStat.getPlayerTracker().getPlayerStatus(uuid);
-					if (!event.player.worldObj.isRemote) {
-						RecStat.getPlayerTracker().sync();
-					}
-				}
+		UUID uuid = RecStat.getUUID(event.player);
+		if (uuid != null) {
+			RecStat.getPlayerTracker().getPlayerStatus(uuid);
+			if (!event.player.worldObj.isRemote) {
+				RecStat.getPlayerTracker().sync();
 			}
 		}
 	}
 
 	@SubscribeEvent
 	public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-		if (event.player != null) {
-			GameProfile gameProfile = event.player.getGameProfile();
-			if (gameProfile != null) {
-				UUID uuid = gameProfile.getId();
-				if (uuid != null) {
-					RecStat.getPlayerTracker().removePlayerStatus(uuid);
-					RecStat.getPlayerTracker().sync();
-				}
-			}
+		UUID uuid = RecStat.getUUID(event.player);
+		if (uuid != null) {
+			RecStat.getPlayerTracker().removePlayerStatus(uuid);
+			RecStat.getPlayerTracker().sync();
 		}
 	}
 
 	@SubscribeEvent
 	public void onPlayerGetDisplayName(net.minecraftforge.event.entity.player.PlayerEvent.NameFormat event) {
-		EntityPlayer player = event.getEntityPlayer();
-		if (player != null) {
-			GameProfile gameProfile = player.getGameProfile();
-			if (gameProfile != null) {
-				UUID uuid = gameProfile.getId();
-				if (uuid != null) {
-					IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
-					if (playerStatus.isRecording()) {
-						event.setDisplayname(RecStat.getPlayerNamePrefix().getFormattedText() + event.getDisplayname());
-					}
-				}
+		UUID uuid = RecStat.getUUID(event.getEntityPlayer());
+		if (uuid != null) {
+			IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
+			if (playerStatus.isRecording()) {
+				event.setDisplayname(RecStat.getPlayerNamePrefix().getFormattedText() + event.getDisplayname());
 			}
 		}
 	}
 
 	@SubscribeEvent
-	public void onPlayerUpdate(LivingEvent.LivingUpdateEvent event) {
+	public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
 		EntityLivingBase entityLiving = event.getEntityLiving();
 		if (entityLiving instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer) entityLiving;
-			GameProfile gameProfile = player.getGameProfile();
-			if (gameProfile != null) {
-				UUID uuid = gameProfile.getId();
-				if (uuid != null) {
-					player.refreshDisplayName();
-				}
+			UUID uuid = RecStat.getUUID(player);
+			if (uuid != null) {
+				player.refreshDisplayName();
 			}
 		}
 	}

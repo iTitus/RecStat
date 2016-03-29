@@ -4,8 +4,6 @@ import io.github.ititus.recstat.api.IPlayerStatus;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.common.util.INBTSerializable;
-
 public class PlayerStatus implements IPlayerStatus {
 
 	private boolean isRecording;
