@@ -45,7 +45,7 @@ public class RecStat {
 
 	public static ITextComponent getWithPrefix(ITextComponent msg) {
 		ITextComponent prefix = new TextComponentString(TextFormatting.GRAY + "[" + TextFormatting.DARK_RED + MOD_NAME + TextFormatting.GRAY + "]");
-		prefix.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentTranslation("text.recstat:info", MOD_NAME, MOD_AUTHOR)));
+		prefix.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentTranslation("text.recstat:info", MOD_NAME, MOD_AUTHOR)));
 		ITextComponent text = new TextComponentTranslation("text.recstat:prefix", prefix, msg);
 		return text;
 	}

@@ -63,7 +63,7 @@ public class CommandRecStat extends CommandBase {
 					player = getPlayer(server, sender, args[1]);
 					if (player != sender && !sender.canCommandSenderUseCommand(2, getCommandName())) {
 						ITextComponent msg = new TextComponentTranslation("commands.generic.permission");
-						msg.getChatStyle().setColor(TextFormatting.RED);
+						msg.getStyle().setColor(TextFormatting.RED);
 						sender.addChatMessage(msg);
 						break;
 					}
@@ -89,7 +89,7 @@ public class CommandRecStat extends CommandBase {
 					player = getPlayer(server, sender, args[2]);
 					if (player != sender && !sender.canCommandSenderUseCommand(2, getCommandName())) {
 						ITextComponent msg = new TextComponentTranslation("commands.generic.permission");
-						msg.getChatStyle().setColor(TextFormatting.RED);
+						msg.getStyle().setColor(TextFormatting.RED);
 						sender.addChatMessage(msg);
 						break;
 					}
@@ -111,7 +111,7 @@ public class CommandRecStat extends CommandBase {
 					IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
 					if (playerStatus.isRecording() == isRecording) {
 						ITextComponent msg = new TextComponentTranslation("text.recstat:alreadyRecording." + (playerStatus.isRecording() ? "true" : "false"), sender.getDisplayName());
-						msg.getChatStyle().setColor(TextFormatting.RED);
+						msg.getStyle().setColor(TextFormatting.RED);
 						sender.addChatMessage(RecStat.getWithPrefix(msg));
 					} else {
 						playerStatus.setRecording(isRecording);
