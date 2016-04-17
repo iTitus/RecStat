@@ -1,6 +1,9 @@
 package io.github.ititus.recstat.client.handler;
 
+import java.util.Collection;
 import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
 
 import org.lwjgl.input.Keyboard;
 
@@ -13,8 +16,12 @@ import io.github.ititus.recstat.network.message.MessageSetPlayerStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.profiler.Profiler;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -32,7 +39,8 @@ public class ClientEventHandler {
 		ClientRegistry.registerKeyBinding(changeRecordStatus);
 	}
 
-	private void onInput() {
+	@SubscribeEvent
+	public void onInput(InputEvent event) {
 		Minecraft mc = Minecraft.getMinecraft();
 		if (mc.inGameHasFocus) {
 			if (changeRecordStatus.isPressed()) {
@@ -44,18 +52,8 @@ public class ClientEventHandler {
 		}
 	}
 
-	@SubscribeEvent
-	public void onKeyInput(InputEvent.KeyInputEvent event) {
-		onInput();
-	}
-
-	@SubscribeEvent
-	public void onMouseInput(InputEvent.MouseInputEvent event) {
-		onInput();
-	}
-
 	@SubscribeEvent(priority = EventPriority.LOW)
-	public void onRenderGameOverPost(RenderGameOverlayEvent.Post event) {
+	public void onRenderGameOverlayPost(RenderGameOverlayEvent.Post event) {
 		if (event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
 
 			Minecraft mc = Minecraft.getMinecraft();
@@ -110,6 +108,38 @@ public class ClientEventHandler {
 			}
 			p.endSection();
 		}
+	}
+
+	@SubscribeEvent
+	public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
+		if (event.getType() != RenderGameOverlayEvent.ElementType.PLAYER_LIST) {
+			return;
+		}
+
+		Minecraft mc = Minecraft.getMinecraft();
+		if (mc.thePlayer == null || mc.thePlayer.sendQueue == null) {
+			return;
+		}
+
+		Collection<NetworkPlayerInfo> playerInfoCollection = mc.thePlayer.sendQueue.getPlayerInfoMap();
+		if (playerInfoCollection == null) {
+			return;
+		}
+
+		playerInfoCollection.stream().filter(playerInfo -> playerInfo != null).forEach(playerInfo -> {
+			GameProfile gameProfile = playerInfo.getGameProfile();
+			if (gameProfile != null) {
+				UUID uuid = gameProfile.getId();
+				if (uuid != null) {
+					IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
+					if (playerStatus.isRecording()) {
+						ITextComponent displayName = new TextComponentString(ScorePlayerTeam.formatPlayerName(playerInfo.getPlayerTeam(), gameProfile.getName()));
+						playerInfo.setDisplayName(RecStat.getPlayerNamePrefix().appendSibling(displayName));
+					}
+				}
+			}
+		});
+
 	}
 
 }
