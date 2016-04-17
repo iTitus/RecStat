@@ -110,7 +110,7 @@ public class ClientEventHandler {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onRenderGameOverlayPre(RenderGameOverlayEvent.Pre event) {
 		if (event.getType() != RenderGameOverlayEvent.ElementType.PLAYER_LIST) {
 			return;
