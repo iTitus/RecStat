@@ -132,10 +132,11 @@ public class ClientEventHandler {
 				UUID uuid = gameProfile.getId();
 				if (uuid != null) {
 					IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
+					ITextComponent displayName = new TextComponentString(ScorePlayerTeam.formatPlayerName(playerInfo.getPlayerTeam(), gameProfile.getName()));
 					if (playerStatus.isRecording()) {
-						ITextComponent displayName = new TextComponentString(ScorePlayerTeam.formatPlayerName(playerInfo.getPlayerTeam(), gameProfile.getName()));
-						playerInfo.setDisplayName(RecStat.getPlayerNamePrefix().appendSibling(displayName));
+						displayName = RecStat.getPlayerNamePrefix().appendSibling(displayName);
 					}
+					playerInfo.setDisplayName(displayName);
 				}
 			}
 		});
