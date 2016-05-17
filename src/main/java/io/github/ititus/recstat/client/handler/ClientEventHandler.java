@@ -117,11 +117,11 @@ public class ClientEventHandler {
 		}
 
 		Minecraft mc = Minecraft.getMinecraft();
-		if (mc.thePlayer == null || mc.thePlayer.sendQueue == null) {
+		if (mc.thePlayer == null || mc.thePlayer.connection == null) {
 			return;
 		}
 
-		Collection<NetworkPlayerInfo> playerInfoCollection = mc.thePlayer.sendQueue.getPlayerInfoMap();
+		Collection<NetworkPlayerInfo> playerInfoCollection = mc.thePlayer.connection.getPlayerInfoMap();
 		if (playerInfoCollection == null) {
 			return;
 		}
