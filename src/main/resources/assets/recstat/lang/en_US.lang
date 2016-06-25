@@ -13,7 +13,7 @@ text.recstat:recordingHudText.1=§4Recording§r
 text.recstat:recordingHudText.2=§4R
 text.recstat:recordingHudText.3=§4r
 
-key.recstat:changeRecordStatus=Toggle recording state
+key.recstat.changeRecordStatus=Toggle recording state
 key.categories.recstat:recstat=RecStat
 
 # server-wide broadcast messages #

@@ -25,6 +25,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -35,19 +37,16 @@ public class ClientEventHandler {
 	private final KeyBinding changeRecordStatus;
 
 	public ClientEventHandler() {
-		changeRecordStatus = new KeyBinding("key.recstat:changeRecordStatus", Keyboard.KEY_R, "key.categories.recstat:recstat");
+		changeRecordStatus = new KeyBinding("key.recstat.changeRecordStatus", KeyConflictContext.UNIVERSAL, KeyModifier.NONE, Keyboard.KEY_F10, "key.categories.recstat:recstat");
 		ClientRegistry.registerKeyBinding(changeRecordStatus);
 	}
 
 	@SubscribeEvent
 	public void onInput(InputEvent event) {
-		Minecraft mc = Minecraft.getMinecraft();
-		if (mc.inGameHasFocus) {
-			if (changeRecordStatus.isPressed()) {
-				UUID uuid = RecStat.getUUID(mc.thePlayer);
-				if (uuid != null) {
-					NetworkHandler.instance.sendToServer(new MessageSetPlayerStatus(RecStat.getToggledPlayerStatus(uuid)));
-				}
+		if (changeRecordStatus.isPressed()) {
+			UUID uuid = RecStat.getUUID(Minecraft.getMinecraft().thePlayer);
+			if (uuid != null) {
+				NetworkHandler.instance.sendToServer(new MessageSetPlayerStatus(RecStat.getToggledPlayerStatus(uuid)));
 			}
 		}
 	}
@@ -67,7 +66,7 @@ public class ClientEventHandler {
 					UUID uuid = RecStat.getUUID(mc.thePlayer);
 					if (uuid != null) {
 						IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
-						if (playerStatus.isRecording()) {
+						if (playerStatus != null && playerStatus.isRecording()) {
 							String text = I18n.format("text.recstat:recordingHudText." + ConfigHandler.recordingHudText);
 							int color = 0xFFFFFF;
 							int textWidth = fr.getStringWidth(text);
@@ -133,7 +132,7 @@ public class ClientEventHandler {
 				if (uuid != null) {
 					IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
 					ITextComponent displayName = new TextComponentString(ScorePlayerTeam.formatPlayerName(playerInfo.getPlayerTeam(), gameProfile.getName()));
-					if (playerStatus.isRecording()) {
+					if (playerStatus != null && playerStatus.isRecording()) {
 						displayName = RecStat.getPlayerNamePrefix().appendSibling(displayName);
 					}
 					playerInfo.setDisplayName(displayName);
