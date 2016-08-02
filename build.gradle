@@ -22,7 +22,7 @@ configFile.withReader {
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "${config.minecraft_version}-${config.mod_version}"
-group= "io.github.ititus.recstat"
+group = "io.github.ititus.recstat"
 archivesBaseName = "RecStat"
 
 sourceCompatibility = JavaVersion.VERSION_1_8
