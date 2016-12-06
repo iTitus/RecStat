@@ -3,7 +3,6 @@ package io.github.ititus.recstat.network;
 import io.github.ititus.recstat.RecStat;
 import io.github.ititus.recstat.network.message.MessageSetPlayerStatus;
 import io.github.ititus.recstat.network.message.MessageSyncAll;
-
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -19,6 +18,7 @@ public class NetworkHandler {
 		registerMessage(MessageSetPlayerStatus.class, Side.SERVER);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void registerMessage(Class clazz, Side handlerSide) {
 		instance.registerMessage(clazz, clazz, discriminator++, handlerSide);
 	}

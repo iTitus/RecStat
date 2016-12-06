@@ -44,7 +44,7 @@ public class ClientEventHandler {
 	@SubscribeEvent
 	public void onInput(InputEvent event) {
 		if (changeRecordStatus.isPressed()) {
-			UUID uuid = RecStat.getUUID(Minecraft.getMinecraft().thePlayer);
+			UUID uuid = RecStat.getUUID(Minecraft.getMinecraft().player);
 			if (uuid != null) {
 				NetworkHandler.instance.sendToServer(new MessageSetPlayerStatus(RecStat.getToggledPlayerStatus(uuid)));
 			}
@@ -63,7 +63,7 @@ public class ClientEventHandler {
 			{
 				ScaledResolution resolution = event.getResolution();
 				if (fr != null && resolution != null) {
-					UUID uuid = RecStat.getUUID(mc.thePlayer);
+					UUID uuid = RecStat.getUUID(mc.player);
 					if (uuid != null) {
 						IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
 						if (playerStatus != null && playerStatus.isRecording()) {
@@ -116,11 +116,11 @@ public class ClientEventHandler {
 		}
 
 		Minecraft mc = Minecraft.getMinecraft();
-		if (mc.thePlayer == null || mc.thePlayer.connection == null) {
+		if (mc.player == null || mc.player.connection == null) {
 			return;
 		}
 
-		Collection<NetworkPlayerInfo> playerInfoCollection = mc.thePlayer.connection.getPlayerInfoMap();
+		Collection<NetworkPlayerInfo> playerInfoCollection = mc.player.connection.getPlayerInfoMap();
 		if (playerInfoCollection == null) {
 			return;
 		}

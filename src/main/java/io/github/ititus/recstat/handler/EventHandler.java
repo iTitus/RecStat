@@ -20,7 +20,7 @@ public class EventHandler {
 		UUID uuid = RecStat.getUUID(event.player);
 		if (uuid != null) {
 			RecStat.getPlayerTracker().getPlayerStatus(uuid);
-			if (!event.player.worldObj.isRemote) {
+			if (!event.player.world.isRemote) {
 				RecStat.getPlayerTracker().sync();
 			}
 		}

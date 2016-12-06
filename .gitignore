@@ -13,12 +13,12 @@ out
 *.iml
 .idea
 
-# gradle
-build
-.gradle
-!gradlew.bat
-
 # other
 eclipse
 run
 *.bat
+
+# gradle
+build
+.gradle
+!gradlew.bat

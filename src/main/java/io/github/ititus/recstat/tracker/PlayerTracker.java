@@ -22,7 +22,7 @@ public class PlayerTracker implements IPlayerTracker {
 
 	private IPlayerStatus getPlayerStatusRaw(UUID uuid) {
 		if (uuid == null) {
-			throw new NullPointerException();
+			throw new NullPointerException("uuid must not be null");
 		}
 		return playerStatusMap.get(uuid);
 	}
@@ -30,7 +30,7 @@ public class PlayerTracker implements IPlayerTracker {
 	@Override
 	public IPlayerStatus getPlayerStatus(UUID uuid) {
 		if (uuid == null) {
-			throw new NullPointerException();
+			throw new NullPointerException("uuid must not be null");
 		}
 		if (!playerStatusMap.containsKey(uuid)) {
 			IPlayerStatus playerStatus = new PlayerStatus();
@@ -43,15 +43,18 @@ public class PlayerTracker implements IPlayerTracker {
 	@Override
 	public void removePlayerStatus(UUID uuid) {
 		if (uuid == null) {
-			throw new NullPointerException();
+			throw new NullPointerException("uuid must not be null");
 		}
 		playerStatusMap.remove(uuid);
 	}
 
 	@Override
 	public void setPlayerStatus(UUID uuid, IPlayerStatus playerStatus) {
-		if (uuid == null || playerStatus == null) {
-			throw new NullPointerException();
+		if (uuid == null) {
+			throw new NullPointerException("uuid must not be null");
+		}
+		if (playerStatus == null) {
+			throw new NullPointerException("playerStatus must not be null");
 		}
 		IPlayerStatus existingPlayerStatus = getPlayerStatus(uuid);
 		existingPlayerStatus.setRecording(playerStatus.isRecording());

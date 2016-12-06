@@ -2,6 +2,8 @@ package io.github.ititus.recstat;
 
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import com.mojang.authlib.GameProfile;
 
 import io.github.ititus.recstat.api.IPlayerStatus;
@@ -62,7 +64,8 @@ public class RecStat {
 		return new PlayerStatus(!playerStatus.isRecording());
 	}
 
-	public static UUID getUUID(EntityPlayer player) {
+	@Nullable
+	public static UUID getUUID(@Nullable EntityPlayer player) {
 		if (player != null) {
 			GameProfile gameProfile = player.getGameProfile();
 			if (gameProfile != null) {

@@ -49,7 +49,7 @@ public class MessageSetPlayerStatus extends BaseMessage<MessageSetPlayerStatus> 
 
 					IPlayerStatus playerStatus = RecStat.getPlayerTracker().getPlayerStatus(uuid);
 					ITextComponent msg = new TextComponentTranslation("text.recstat:record." + (playerStatus.isRecording() ? "true" : "false"), player.getDisplayName());
-					server.getPlayerList().sendChatMsg(RecStat.getWithPrefix(msg));
+					server.getPlayerList().sendMessage(RecStat.getWithPrefix(msg));
 				}
 			}
 		}
